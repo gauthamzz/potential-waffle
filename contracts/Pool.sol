@@ -10,12 +10,12 @@ contract Pool is ERC20 {
     using SafeERC20 for IERC20;
 
     // TODO: add _zTokenAddress
-    address internal _zTokenAddress;
+    // address internal _zTokenAddress;
 
     constructor(
         string memory name,
-        string memory symbol,
-        address zTokenAddress
+        string memory symbol
+        // address zTokenAddress
     ) public ERC20(name, symbol) {
         uint256 chainId;
 
@@ -23,13 +23,13 @@ contract Pool is ERC20 {
         assembly {
             chainId := chainid()
         }
-        _zTokenAddress = zTokenAddress;
-		console.log("deploy pool of " ,name , "at" , zTokenAddress);
+        // _zTokenAddress = zTokenAddress;
+		// console.log("deploy pool of " ,name , "at" , this);
     }
 
     function deposit(address asset, uint256 amount) external {
 		console.log("deposit transferFrom");
-        IERC20(asset).transferFrom(msg.sender, _zTokenAddress, amount);
+        IERC20(asset).safeTransferFrom(msg.sender, address(this), amount);
 		console.log("deposit mint ztokens");
         _mint(msg.sender, amount);
     }
@@ -39,7 +39,7 @@ contract Pool is ERC20 {
         returns (uint256)
     {
 		console.log("wtihdraw");
-        uint256 userBalance = IERC20(_zTokenAddress).balanceOf(msg.sender);
+        uint256 userBalance = IERC20(this).balanceOf(msg.sender);
 
         uint256 amountToWithdraw = amount;
 
@@ -49,6 +49,6 @@ contract Pool is ERC20 {
 		console.log("burn tokens");
 		_burn(msg.sender, amountToWithdraw);
 		console.log("tranfer");
-		IERC20(asset).transferFrom(_zTokenAddress, msg.sender, amountToWithdraw);
+		IERC20(asset).safeTransfer(msg.sender, amountToWithdraw);
     }
 }

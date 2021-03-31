@@ -15,7 +15,7 @@ describe("Token contract", function () {
     tslaToken = await Token.deploy(1000);
 
     Pool = await ethers.getContractFactory("Pool");
-    pool = await Pool.deploy("zeta TSLA", "zTSLA", await tslaToken.address)
+    pool = await Pool.deploy("zeta TSLA", "zTSLA")
   });
 
   describe("Deployment", function () {
@@ -45,12 +45,9 @@ describe("Token contract", function () {
         expect(await tslaToken.balanceOf(owner.address)).to.equal(900)
         expect(await pool.balanceOf(owner.address), 100);
 
-        // await pool.approve(tslaToken.address, 100);
         await pool.withdraw(tslaToken.address, 100);
         expect(await tslaToken.balanceOf(owner.address)).to.equal(1000);
         expect(await pool.balanceOf(owner.address), 0);
-
-
 
         });
   });
